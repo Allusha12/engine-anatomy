@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+</head>
+<body>
+<title>Анатомія двигуна 911 GT3</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Unbounded:wght@400;500&display=swap">
+<style>
+/* Layout: one technical plate (figure) on top, then a two-column legend: how-it-works steps + parts list */
+:root{
+  --bg:#E9ECE8; --paper:#F3F5F1; --ink:#1D2320; --ink-2:#6E7772; --rule:#C3C9C4; --accent:#B4283C;
+  --f-display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101312; --paper:#161A18; --ink:#E1E5E0; --ink-2:#89928D; --rule:#2E3532; --accent:#F25E72; color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101312; --paper:#161A18; --ink:#E1E5E0; --ink-2:#89928D; --rule:#2E3532; --accent:#F25E72; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1080px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));display:grid;gap:22px}
+.mono{font-family:var(--f-mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2)}
+header{display:grid;gap:10px}
+h1{font-family:var(--f-display);font-weight:500;font-size:clamp(24px,4.4vw,40px);line-height:1.12;margin:0;text-wrap:balance;letter-spacing:-.01em}
+.lede{margin:0;max-width:62ch;font-size:17px;color:var(--ink)}
+
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+button{font:inherit;color:inherit}
+.toggle{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;background:var(--paper);border:1px solid var(--ink);padding:8px 14px;cursor:pointer}
+.toggle:hover{background:var(--ink);color:var(--paper)}
+.toggle:focus-visible,.step:focus-visible,.pitem:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.plate{position:relative;background:var(--paper);border:1px solid var(--rule)}
+.corner{position:absolute;font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);pointer-events:none}
+.c-tl{top:12px;left:14px}.c-tr{top:12px;right:14px;text-align:right}
+.c-bl{bottom:12px;left:14px}.c-br{bottom:12px;right:14px;text-align:right}
+.hint-touch{display:none}
+@media (hover:none){.hint-mouse{display:none}.hint-touch{display:inline}}
+.fig{display:block;padding:34px 8px;cursor:crosshair;touch-action:manipulation}
+.fig svg{display:block;width:100%;height:auto;max-height:78vh;margin:0 auto;overflow:visible}
+
+/* drawing */
+.ink{fill:var(--paper);stroke:var(--ink);stroke-width:1.05;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.fill{fill:var(--paper);stroke:none}
+.line{fill:none;stroke:var(--ink);stroke-width:1.05;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.thin{fill:none;stroke:var(--ink-2);stroke-width:.7;vector-effect:non-scaling-stroke}
+.spoke{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.spring{fill:none;stroke:var(--ink);stroke-width:.8;vector-effect:non-scaling-stroke}
+.dot{fill:var(--ink);stroke:none}
+.jewel{fill:var(--ink-2);stroke:var(--ink);stroke-width:.8;vector-effect:non-scaling-stroke}
+.eo{fill-rule:evenodd}
+.part{transition:transform .75s cubic-bezier(.2,.8,.2,1) var(--d), opacity .25s ease}
+.fig.exploded .part{transform:translate(var(--dx),var(--dy))}
+#scene{transition:transform .8s cubic-bezier(.2,.8,.2,1);transform:translate(0px,-109px) scale(1.7)}
+.fig.exploded #scene{transform:none}
+.part.on .ink,.part.on .line,.part.on .spoke,.part.on .spring,.part.on .thin{stroke:var(--accent)}
+.part.on .dot{fill:var(--accent)}
+.fig.focus .part:not(.on){opacity:.16}
+
+.labels{opacity:0;transition:opacity .3s ease;pointer-events:none}
+.fig.exploded .labels{opacity:1;transition-delay:.4s;pointer-events:auto}
+.lbl{cursor:pointer;transition:opacity .2s}
+.lbl path{fill:none;stroke:var(--ink-2);stroke-width:.8;vector-effect:non-scaling-stroke}
+.lbl circle{fill:var(--ink)}
+.lbl text{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;fill:var(--ink);dominant-baseline:middle}
+.lbl .ln{fill:var(--ink-2)}
+.lbl.on path{stroke:var(--accent)}.lbl.on circle,.lbl.on text,.lbl.on .ln{fill:var(--accent)}
+.fig.focus .lbl:not(.on){opacity:.3}
+@media (max-width:620px){.lbl .nm{display:none}.lbl text{font-size:20px}.c-tr{max-width:46%}.c-bl{display:none}}
+
+.caption{min-height:3.2em;border-left:2px solid var(--accent);padding:6px 0 6px 14px;max-width:72ch;margin:0}
+.caption b{font-family:var(--f-mono);font-weight:500;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-right:6px}
+
+.legend{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:40px;margin-top:10px}
+@media (max-width:820px){.legend{grid-template-columns:minmax(0,1fr);gap:28px}}
+h2{font-family:var(--f-display);font-weight:500;font-size:19px;margin:0 0 14px;letter-spacing:-.005em}
+.steps,.plist{list-style:none;margin:0;padding:0;display:grid}
+.step{display:grid;grid-template-columns:34px minmax(0,1fr);gap:4px 12px;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--rule);padding:14px 0;cursor:pointer}
+.step .n{font-family:var(--f-mono);font-size:12px;color:var(--ink-2);padding-top:3px}
+.step .t{font-weight:500}
+.step .x{grid-column:2;color:var(--ink-2);max-width:60ch}
+.step:hover .t,.step.on .t,.step.on .n{color:var(--accent)}
+.step.on .x{color:var(--ink)}
+.pitem{display:grid;grid-template-columns:34px minmax(0,1fr);gap:2px 12px;border-top:1px solid var(--rule);padding:10px 0;cursor:pointer}
+.pitem .n{font-family:var(--f-mono);font-size:12px;color:var(--ink-2);padding-top:2px;font-variant-numeric:tabular-nums}
+.pitem .t{font-weight:500}
+.pitem .x{grid-column:2;color:var(--ink-2);font-size:14px}
+.pitem.on .t,.pitem.on .n{color:var(--accent)}
+.note{margin-top:14px}
+
+@media (prefers-reduced-motion: reduce){.part,#scene,.labels{transition:none!important}}
+</style>
+
+<style>
+#scene{transform:translate(var(--tx,0px),var(--ty,0px)) scale(var(--s,1))}
+.fig.exploded #scene{transform:translate(0px,0px) scale(1)}
+.lbl text{font-size:var(--lf,11px)}
+@media (max-width:620px){.lbl text{font-size:var(--lf,11px)}}
+.spark{fill:var(--accent);stroke:none;opacity:0}
+.spark.on{opacity:1}
+.fact{display:flex;flex-wrap:wrap;gap:8px 28px}
+.fact div{display:grid;gap:2px}
+.fact b{font-family:var(--f-display);font-weight:500;font-size:22px;font-variant-numeric:tabular-nums}
+</style>
+<style>
+.get{margin-top:24px;border-top:1px solid var(--ink);padding-top:28px;display:grid;gap:14px;max-width:720px}
+.get h2{font-size:clamp(20px,3vw,26px);margin:0}
+.get p{margin:0;max-width:62ch}
+.dl{display:inline-flex;align-items:center;justify-content:center;gap:10px;justify-self:start;background:var(--ink);color:var(--paper);text-decoration:none;font-family:var(--f-mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:16px 24px;min-height:48px;border:1px solid var(--ink)}
+.dl:hover{background:var(--accent);border-color:var(--accent)}
+.dl:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.dl small{font-size:11px;opacity:.7}
+.get ol{margin:0;padding-left:20px;display:grid;gap:4px;color:var(--ink-2)}
+.get code{font-family:var(--f-mono);font-size:13px;color:var(--ink)}
+.author{display:inline-flex;align-items:center;gap:12px;justify-self:start;color:var(--ink);text-decoration:none;line-height:1.3}
+.author .ava{width:40px;height:40px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-family:var(--f-display);font-weight:500;font-size:16px;flex:none}
+.author:hover b{color:var(--accent)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
+.star{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 18px;border:1px solid var(--ink);color:var(--ink);text-decoration:none;font-family:var(--f-mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;background:var(--paper)}
+.star .st{color:#C9A227;font-size:16px}
+.star .cnt{margin-left:4px;padding-left:10px;border-left:1px solid var(--rule);font-variant-numeric:tabular-nums}
+.star:hover{border-color:var(--accent);color:var(--accent)}
+.star:focus-visible,.author:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.get .note{color:var(--ink-2);font-size:14px}
+.legal{font-size:10px;line-height:1.6}
+@media (max-width:520px){.actions{flex-direction:column}.dl,.star{justify-content:center}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="mono">Рис. 03 · Анатомія двигуна</div>
+    <h1>Двигун 911 GT3: атмосферна опозитна шістка</h1>
+    <p class="lede">Шість циліндрів лежать один навпроти одного, тож поршні в кожній парі рухаються назустріч і гасять вібрації один одного. Легкі ковані поршні, титанові шатуни й жорсткий привід клапанів дозволяють двигуну крутитися до 9000 об/хв без турбіни.</p>
+    <div class="fact">
+      <div><span class="mono">Об’єм</span><b>4,0 л</b></div>
+      <div><span class="mono">Потужність</span><b>510 к.с.</b></div>
+      <div><span class="mono">Момент</span><b>450 Н·м</b></div>
+      <div><span class="mono">Межа обертів</span><b>9000 об/хв</b></div>
+    </div>
+  </header>
+
+  <div class="bar">
+    <span class="mono">Натисни на схему, щоб розібрати чи зібрати</span>
+    <button class="toggle" id="toggle" type="button" aria-pressed="false">Розібрати</button>
+  </div>
+
+  <div class="plate">
+    <span class="corner c-tl">Рис. 03</span>
+    <span class="corner c-tr">Опозитний 6-циліндровий · 4,0 л</span>
+    <span class="corner c-bl">Натисни — розбери</span>
+    <span class="corner c-br">9000 об/хв · 9 вузлів</span>
+    <div class="fig" id="fig">
+      <svg id="svg" viewBox="-600 -400 1200 800" role="img" aria-label="Ізометрична схема опозитного шестициліндрового двигуна, що розкладається на 9 вузлів">
+        <g id="scene"></g>
+        <g class="labels" id="labels"></g>
+      </svg>
+    </div>
+  </div>
+
+  <p class="caption" id="caption" aria-live="polite"></p>
+
+  <section class="legend">
+    <div>
+      <h2>Як це працює</h2>
+      <ol class="steps" id="steps"></ol>
+      <p class="mono note">Схема умовна: пропорції спрощено, обертання колінвала сповільнено. Дані: 911 GT3 поточного покоління за матеріалами Porsche.</p>
+    </div>
+    <div>
+      <h2>Вузли</h2>
+      <ol class="plist" id="plist"></ol>
+    </div>
+  </section>
+
+  <section class="get" id="skill">
+    <div class="mono">Skill для Claude</div>
+    <h2>Зробіть таку схему для будь-чого</h2>
+    <p>Ця схема зроблена за мотивами skill <b>Anatomy</b>. Скачайте оригінал на GitHub і створюйте свої схеми.</p>
+    <a class="author" href="https://github.com/wheresryan22" target="_blank" rel="noopener">
+      <span class="ava" aria-hidden="true">R</span>
+      <span><span class="mono">Автор skill</span><br><b>Ryan</b> · @wheresryan22</span>
+    </a>
+    <div class="actions">
+      <a class="dl" href="https://github.com/wheresryan22/anatomy" target="_blank" rel="noopener">Скачати на GitHub <span aria-hidden="true">↗</span></a>
+      <a class="star" href="https://github.com/wheresryan22/anatomy" target="_blank" rel="noopener" aria-label="Поставити зірочку на GitHub"><span class="st" aria-hidden="true">★</span> Star<span class="cnt" id="stars" hidden></span></a>
+    </div>
+    <p class="note">Інструкція зі встановлення — у README репозиторію. Для Claude Code: <code>npx skills add wheresryan22/anatomy -g</code></p>
+    <p class="mono legal">Porsche і 911 GT3 — торговельні марки Porsche AG. Сторінка не пов’язана з Porsche, схема умовна.</p>
+  </section>
+  <script>
+  (function(){var el=document.getElementById('stars');if(!el)return;
+    function fmt(n){return n>=1000?(Math.round(n/100)/10).toString().replace('.0','')+'k':String(n)}
+    try{fetch('https://api.github.com/repos/wheresryan22/anatomy').then(function(r){return r.ok?r.json():null}).then(function(d){if(d&&typeof d.stargazers_count==='number'){el.textContent=fmt(d.stargazers_count);el.hidden=false}}).catch(function(){})}catch(e){}
+  })();
+  </script>
+</div>
+
+<script>
+(function(){
+const TAU=Math.PI*2, C30=Math.cos(Math.PI/6);
+const iso=(x,y,z)=>[(x-y)*C30,(x+y)*0.5-z];
+const pt=p=>p[0].toFixed(1)+','+p[1].toFixed(1);
+const D=P=>'M'+P.map(pt).join('L')+'Z';
+const DL=P=>'M'+P.map(pt).join('L');
+const P3=pts=>pts.map(p=>iso(...p));
+function hull(P){P=P.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);const lo=[],up=[];for(const p of P){while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}for(let i=P.length-1;i>=0;i--){const p=P[i];while(up.length>=2&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p)}up.pop();lo.pop();return lo.concat(up)}
+const face=(pts,c='ink')=>`<path class="${c}" d="${D(P3(pts))}"/>`;
+const poly3=(pts,c='thin')=>`<path class="${c}" d="${DL(P3(pts))}"/>`;
+const solid3=(pts,c='ink')=>`<path class="${c}" d="${D(hull(P3(pts)))}"/>`;
+const seg=(a,b,c='thin')=>`<path class="${c}" d="M${pt(iso(...a))}L${pt(iso(...b))}"/>`;
+function boxF(x0,x1,y0,y1,z0,z1,c='ink'){
+  return face([[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1]],c)+face([[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[x1,y0,z1]],c)+face([[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]],c);
+}
+// cylinder along an axis; +end cap is the visible one
+function ringPts(axis,a,c1,c2,r,n=36,from=0,to=TAU){const o=[];for(let i=0;i<n;i++){const t=from+(to-from)*i/(to===TAU?n:n-1);const u=r*Math.cos(t),v=r*Math.sin(t);o.push(axis==='x'?[a,c1+u,c2+v]:axis==='y'?[c1+u,a,c2+v]:[c1+u,c2+v,a])}return o}
+function cyl(axis,a0,a1,c1,c2,r,opt={}){
+  let s=solid3(ringPts(axis,a0,c1,c2,r).concat(ringPts(axis,a1,c1,c2,r)),opt.c||'ink');
+  (opt.bands||[]).forEach(a=>s+=poly3(ringPts(axis,a,c1,c2,r,19,-Math.PI/4,3*Math.PI/4)));
+  s+=face(ringPts(axis,a1,c1,c2,r),opt.c||'ink');
+  return s;
+}
+const discXZ=(cx,y,cz,r,n=24)=>{const o=[];for(let i=0;i<n;i++){const t=i/n*TAU;o.push([cx+r*Math.cos(t),y,cz+r*Math.sin(t)])}return o};
+
+/* geometry constants */
+const R_CR=18, ROD=52, BORE=24;
+const CYLS=[ // y, side, phase
+  {y:-70,s:-1,ph:Math.PI},{y:-50,s:1,ph:0},
+  {y:-10,s:-1,ph:Math.PI+4*Math.PI/3},{y:10,s:1,ph:4*Math.PI/3},
+  {y:50,s:-1,ph:Math.PI+2*Math.PI/3},{y:70,s:1,ph:2*Math.PI/3}];
+const sideY=s=>CYLS.filter(c=>c.s===s).map(c=>c.y);
+
+/* ---------- parts ---------- */
+function sump(){
+  let s=boxF(-62,62,-104,104,-64,-44);
+  for(let y=-90;y<=90;y+=20)s+=seg([-58,y,-44],[58,y,-44]);
+  s+=cyl('y',104,118,-30,-54,7)+cyl('y',104,118,0,-54,7)+cyl('y',104,118,30,-54,7);
+  return s;
+}
+function mech(S){
+  const it=[];
+  for(let y=-118;y<118;y+=12)it.push({k:y+6,s:cyl('y',y,y+12,0,0,7)});
+  CYLS.forEach(c=>{
+    const a=S.crank+c.ph, pin=[R_CR*Math.cos(a),c.y,R_CR*Math.sin(a)];
+    const px=pin[0]+c.s*Math.sqrt(ROD*ROD-pin[2]*pin[2]);
+    for(const dy of [-9,9]){const yy=c.y+dy;it.push({k:yy,s:solid3(discXZ(0,yy-2,0,12).concat(discXZ(0,yy+2,0,12),discXZ(pin[0],yy-2,pin[2],10),discXZ(pin[0],yy+2,pin[2],10)))})}
+    it.push({k:c.y+pin[0]*0.5,s:cyl('y',c.y-7,c.y+7,pin[0],pin[2],6)});
+    it.push({k:c.y+(pin[0]+px)/2+1,s:solid3(discXZ(pin[0],c.y-3,pin[2],9).concat(discXZ(pin[0],c.y+3,pin[2],9),discXZ(px,c.y-3,0,6),discXZ(px,c.y+3,0,6)))});
+    const crown=px+c.s*16, skirt=px-c.s*10;
+    const x0=Math.min(crown,skirt),x1=Math.max(crown,skirt);
+    const bands=c.s>0?[crown-3,crown-6,crown-9]:[crown+3,crown+6,crown+9];
+    it.push({k:c.y+px+2,s:cyl('x',x0,x1,c.y,0,BORE-2,{bands})});
+  });
+  it.sort((a,b)=>a.k-b.k);
+  return it.map(i=>i.s).join('');
+}
+function caseHalf(side){return()=>{
+  const x0=side<0?-42:0,x1=side<0?0:42;
+  let s=boxF(x0,x1,-114,114,-42,38);
+  for(let y=-100;y<=100;y+=40)s+=`<path class="thin" d="${D(P3(ringPts('z',38.05,x0+21,y,2.4,12)))}"/>`;
+  if(side<0){for(const y of [-90,-30,30,90])s+=poly3(ringPts('x',0.05,y,0,11,19,-Math.PI/2,Math.PI/2),'line');for(let y=-110;y<=110;y+=22)s+=seg([0.05,y,30],[0.05,y,26])}
+  else{for(let z=-30;z<=30;z+=15)s+=seg([42.05,-110,z],[42.05,110,z])}
+  s+=face([[x0,114,-42],[x1,114,-42],[x1,114,38],[x0,114,38]]);
+  s+=poly3(ringPts('y',114.05,0,0,14,24,0,TAU).concat([ringPts('y',114.05,0,0,14,1)[0]]),'line');
+  return s;
+}}
+function cylBank(side){return()=>{
+  const ys=sideY(side), y0=Math.min(...ys)-32, y1=Math.max(...ys)+32;
+  const x0=side<0?-110:42,x1=side<0?-42:110;
+  let s=boxF(x0,x1,y0,y1,-34,34);
+  ys.forEach(y=>{s+=poly3(ringPts('x',x1+0.05,y,0,BORE+1,48).concat([ringPts('x',x1+0.05,y,0,BORE+1,48)[0]]),'line');s+=poly3(ringPts('x',x1+0.05,y,0,BORE+5,48).concat([ringPts('x',x1+0.05,y,0,BORE+5,48)[0]]))});
+  for(let x=x0+10;x<x1;x+=12)s+=seg([x,y0+4,34.05],[x,y1-4,34.05]);
+  return s;
+}}
+function headSide(side){return()=>{
+  const ys=sideY(side), y0=Math.min(...ys)-34, y1=Math.max(...ys)+34;
+  const x0=side<0?-150:110,x1=side<0?-110:150;
+  let s=boxF(x0,x1,y0,y1,-38,38);
+  const xc=(x0+x1)/2;
+  s+=cyl('y',y0+6,y1-6,xc-9,40,6)+cyl('y',y0+6,y1-6,xc+9,40,6);
+  for(let y=y0+16;y<y1-10;y+=24)s+=`<path class="line" d="${D(P3(ringPts('z',46.1,xc+9,y,1.6,10)))}"/>`;
+  ys.forEach(y=>{s+=poly3(ringPts('x',x1+0.05,y,6,9,24).concat([ringPts('x',x1+0.05,y,6,9,24)[0]]),'thin')});
+  s+=seg([x1+0.05,y0,-20],[x1+0.05,y1,-20]);
+  return s;
+}}
+function coilSide(side){return()=>{
+  const x0=side<0?-166:150,x1=side<0?-150:166;
+  let s='';
+  sideY(side).forEach(y=>{s+=cyl('x',x0,x1,y,6,7.5,{bands:[side<0?x0+4:x1-4]});s+=boxF(side<0?x0-4:x1-10,side<0?x0+6:x1,y-4,y+4,13,19)});
+  return s;
+}}
+function exhSide(side){return()=>{
+  const xc=side<0?-130:130;
+  let s='';
+  const ys=sideY(side);
+  ys.forEach(y=>s+=cyl('z',-70,-38,xc,y,6.5));
+  s+=cyl('y',Math.min(...ys)-10,126,xc,-74,9,{bands:[96,104]});
+  return s;
+}}
+function intake(){
+  let s='';
+  const runner=(side,y)=>{const xs=side*16,xe=side*118;
+    const a=[];for(let i=0;i<20;i++){const t=i/20*TAU;a.push([xs,y+8*Math.cos(t),70+8*Math.sin(t)],[xe,y+7*Math.cos(t),44+7*Math.sin(t)])}
+    let r=solid3(a);
+    const xm=side*68,zm=57;const tb=[];for(let i=0;i<20;i++){const t=i/20*TAU;tb.push([xm-6,y+10*Math.cos(t),zm+10*Math.sin(t)],[xm+6,y+10*Math.cos(t),zm+10*Math.sin(t)])}
+    r+=solid3(tb)+seg([xm,y-9,zm+3],[xm,y+9,zm+3],'line');
+    return r};
+  sideY(-1).forEach(y=>s+=runner(-1,y));
+  s+=cyl('y',-104,104,0,78,20,{bands:[-60,0,60]});
+  s+=cyl('y',104,128,0,78,14,{bands:[112,118]});
+  sideY(1).forEach(y=>s+=runner(1,y));
+  return s;
+}
+function flywheel(){
+  let s=cyl('y',118,128,0,0,54);
+  s+=poly3(ringPts('y',128.05,0,0,47,73).concat([ringPts('y',128.05,0,0,47,1)[0]]));
+  for(let i=0;i<72;i++){const t=i/72*TAU;s+=seg([51*Math.cos(t),128.05,51*Math.sin(t)],[54*Math.cos(t),128.05,54*Math.sin(t)])}
+  for(let i=0;i<6;i++){const t=i/6*TAU;s+=`<path class="line" d="${D(P3(ringPts('y',128.1,14*Math.cos(t),14*Math.sin(t),2.4,10)))}"/>`}
+  s+=`<path class="ink" d="${D(P3(ringPts('y',128.1,0,0,7,24)))}"/>`;
+  return s;
+}
+
+const kx=k=>[C30*k,0.5*k];
+const PARTS={
+  sump:{n:'01',name:'Сухий картер',role:'Неглибокий піддон, з якого насоси одразу відкачують оливу в окремий бак. Мастило не відливає від насоса в поворотах, а двигун сидить нижче.',anchor:[62,104,-54]},
+  mech:{n:'02',name:'Колінвал, шатуни, поршні',role:'Ковані поршні й титанові шатуни перетворюють рух поршнів туди-сюди на обертання колінвала. Легкі деталі витримують 9000 об/хв.',anchor:[0,118,-7]},
+  case:{n:'03',name:'Картер',role:'Корпус із двох половин, розділений по осі колінвала. Тримає корінні підшипники й з’єднує обидва ряди циліндрів.',anchor:[42,114,38]},
+  cyl:{n:'04',name:'Блоки циліндрів',role:'По три циліндри з кожного боку, лежать горизонтально один навпроти одного. Стінки мають плазмове покриття, щоб зменшити тертя.',anchor:[110,102,34]},
+  head:{n:'05',name:'Головки циліндрів',role:'У кожній два розподільчі вали, впускні й випускні клапани. Жорсткі пальцеві штовхачі замість гідрокомпенсаторів точно відкривають клапани на високих обертах.',anchor:[150,104,38]},
+  coils:{n:'06',name:'Котушки запалювання',role:'Окрема котушка на кожну свічку. Дає іскру саме в ту мить, коли суміш стиснута найсильніше.',anchor:[166,70,6]},
+  intake:{n:'07',name:'Впускна система',role:'Розподіляє повітря на шість циліндрів. Шість окремих дросельних заслінок, по одній на циліндр, дають миттєву реакцію на педаль.',anchor:[0,128,92]},
+  exhaust:{n:'08',name:'Випускні колектори',role:'Збирають відпрацьовані гази з кожного ряду циліндрів і ведуть їх до каталізаторів і фільтрів.',anchor:[130,126,-74]},
+  fly:{n:'09',name:'Маховик',role:'Важкий диск на кінці колінвала. Згладжує ривки між робочими ходами й передає крутний момент на зчеплення та коробку.',anchor:[-54,128,0]},
+};
+const LAYERS=[
+  ['sump',sump,0,[0,120]],
+  ['exhaust',exhSide(-1),0,[kx(-240)[0],kx(-240)[1]+95]],
+  ['coils',coilSide(-1),0,kx(-300)],
+  ['head',headSide(-1),0,kx(-240)],
+  ['cyl',cylBank(-1),0,kx(-170)],
+  ['case',caseHalf(-1),0,kx(-95)],
+  ['mech',mech,1,[0,0]],
+  ['case',caseHalf(1),0,kx(95)],
+  ['cyl',cylBank(1),0,kx(170)],
+  ['fly',flywheel,0,[-C30*100,50]],
+  ['exhaust',exhSide(1),0,[kx(240)[0],kx(240)[1]+95]],
+  ['head',headSide(1),0,kx(240)],
+  ['coils',coilSide(1),0,kx(300)],
+  ['intake',intake,0,[0,-175]],
+];
+const ORDER=['sump','mech','case','cyl','head','coils','intake','exhaust','fly'];
+const STEPS=[
+  {t:'Впуск',ids:['intake','head','cyl'],x:'Поршень іде від головки до колінвала, впускні клапани відкриті. Повітря проходить крізь власну дросельну заслінку циліндра, форсунка впорскує паливо прямо в циліндр.'},
+  {t:'Стиснення й іскра',ids:['mech','cyl','coils'],x:'Клапани закриваються, поршень повертається до головки й стискає суміш. У найвищій точці котушка дає іскру на свічку.'},
+  {t:'Робочий хід',ids:['mech','fly'],x:'Згоряння різко підвищує тиск і штовхає поршень назад. Титановий шатун перетворює цей поштовх на обертання колінвала, а маховик згладжує ривки між циліндрами.'},
+  {t:'Випуск',ids:['head','exhaust'],x:'Поршень знову йде до головки, випускні клапани відкриваються, і гази йдуть у колектор. Розподільчі вали через жорсткі штовхачі відкривають клапани точно в такт навіть при 9000 об/хв.'},
+  {t:'Баланс і мастило',ids:['mech','case','sump'],x:'Поршні в кожній парі рухаються дзеркально, тож їхні сили врівноважуються, і двигун крутиться плавно. Сухий картер відкачує оливу в окремий бак, а через колінвал вона подається прямо до шатунних підшипників.'},
+];
+
+/* ---------- build ---------- */
+const svg=document.getElementById('svg'),scene=document.getElementById('scene'),labels=document.getElementById('labels'),figEl=document.getElementById('fig'),cap=document.getElementById('caption');
+const NS='http://www.w3.org/2000/svg';
+const groups=[];
+LAYERS.forEach(([id,fn,anim,off])=>{
+  const g=document.createElementNS(NS,'g');g.setAttribute('class','part');g.dataset.id=id;
+  g.style.setProperty('--dx',off[0].toFixed(1)+'px');g.style.setProperty('--dy',off[1].toFixed(1)+'px');g.style.setProperty('--d',(ORDER.indexOf(id)*30)+'ms');
+  const geo=document.createElementNS(NS,'g');g.appendChild(geo);
+  scene.appendChild(g);groups.push({g,geo,fn,anim,off,id});
+});
+
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const t0=performance.now();
+const state=()=>({crank:reduce?0.6:((performance.now()-t0)/1000)*TAU*0.35});
+function render(all){const S=state();groups.forEach(o=>{if(all||o.anim)o.geo.innerHTML=o.fn(S)})}
+render(true);
+
+function union(boxes){return boxes.reduce((u,b)=>({x0:Math.min(u.x0,b.x0),y0:Math.min(u.y0,b.y0),x1:Math.max(u.x1,b.x1),y1:Math.max(u.y1,b.y1)}),{x0:1e9,y0:1e9,x1:-1e9,y1:-1e9})}
+function layout(){
+  const narrow=figEl.clientWidth<620;
+  const bbs=groups.map(o=>{const b=o.geo.getBBox();return{o,b}});
+  const A=union(bbs.map(({b})=>({x0:b.x,y0:b.y,x1:b.x+b.width,y1:b.y+b.height})));
+  const E=union(bbs.map(({o,b})=>({x0:b.x+o.off[0],y0:b.y+o.off[1],x1:b.x+b.width+o.off[0],y1:b.y+b.height+o.off[1]})));
+  const padX=narrow?70:340, padY=30;
+  const vx=E.x0-padX, vy=E.y0-padY, vw=(E.x1-E.x0)+padX*2, vh=(E.y1-E.y0)+padY*2;
+  svg.setAttribute('viewBox',`${vx.toFixed(0)} ${vy.toFixed(0)} ${vw.toFixed(0)} ${vh.toFixed(0)}`);
+  const s=Math.min((vw*0.86)/(A.x1-A.x0),(vh*0.86)/(A.y1-A.y0));
+  const cx=vx+vw/2, cy=vy+vh/2;
+  scene.style.setProperty('--s',s.toFixed(3));
+  scene.style.setProperty('--tx',(cx-s*(A.x0+A.x1)/2).toFixed(1)+'px');
+  scene.style.setProperty('--ty',(cy-s*(A.y0+A.y1)/2).toFixed(1)+'px');
+  // labels
+  const upp=vw/Math.max(1,svg.clientWidth||figEl.clientWidth);
+  const fs=(narrow?13:11)*upp, gap=fs*2.3;
+  labels.style.setProperty('--lf',fs.toFixed(1)+'px');
+  const colL=E.x0-14, colR=E.x1+14;
+  const items=ORDER.map(id=>{const P=PARTS[id];const g=groups.filter(o=>o.id===id).pop();const a=iso(...P.anchor);return{id,P,ax:a[0]+g.off[0],ay:a[1]+g.off[1]}});
+  items.forEach(i=>i.side=i.ax<(E.x0+E.x1)/2?'L':'R');
+  ['L','R'].forEach(side=>{const list=items.filter(i=>i.side===side).sort((a,b)=>a.ay-b.ay);let prev=-1e9;list.forEach(i=>{i.ly=Math.max(i.ay,prev+gap);prev=i.ly});const over=prev-(E.y1);if(over>0)list.forEach(i=>i.ly-=over)});
+  labels.innerHTML='';
+  items.forEach(i=>{
+    const L_=i.side==='L',x=L_?colL:colR,ex=L_?x+16*upp:x-16*upp,tx=L_?x-6*upp:x+6*upp;
+    const g=document.createElementNS(NS,'g');g.setAttribute('class','lbl');g.dataset.id=i.id;
+    g.innerHTML=`<path d="M${i.ax.toFixed(1)},${i.ay.toFixed(1)}L${ex.toFixed(1)},${i.ly.toFixed(1)}L${x.toFixed(1)},${i.ly.toFixed(1)}"/><circle cx="${i.ax.toFixed(1)}" cy="${i.ay.toFixed(1)}" r="${(2.6*upp).toFixed(1)}"/><text x="${tx.toFixed(1)}" y="${i.ly.toFixed(1)}" text-anchor="${L_?'end':'start'}"><tspan class="ln">${i.P.n}</tspan><tspan class="nm"> ${i.P.name.toUpperCase()}</tspan></text>`;
+    labels.appendChild(g);
+  });
+  paint();
+}
+
+const stepsEl=document.getElementById('steps'),plistEl=document.getElementById('plist');
+STEPS.forEach((s,k)=>{const li=document.createElement('li');li.innerHTML=`<button class="step" type="button" data-k="${k}"><span class="n">${k+1}/${STEPS.length}</span><span class="t">${s.t}</span><span class="x">${s.x}</span></button>`;stepsEl.appendChild(li)});
+ORDER.forEach(id=>{const P=PARTS[id];const li=document.createElement('li');li.className='pitem';li.tabIndex=0;li.dataset.id=id;li.innerHTML=`<span class="n">${P.n}</span><span class="t">${P.name}</span><span class="x">${P.role}</span>`;plistEl.appendChild(li)});
+
+const DEFAULT_CAP='Натисни на схему, щоб розібрати її. Потім натисни на будь-яку деталь, щоб підсвітити її, або на порожнє місце, щоб зібрати назад.';
+let pinned=false,step=null,hoverIds=null,sel=null;
+const toggleBtn=document.getElementById('toggle');
+function setExploded(on){figEl.classList.toggle('exploded',on);toggleBtn.textContent=on?'Зібрати':'Розібрати';toggleBtn.setAttribute('aria-pressed',String(on))}
+function paint(){
+  const ids=hoverIds||(sel?[sel]:null)||(step!==null?STEPS[step].ids:null);
+  figEl.classList.toggle('focus',!!ids);
+  document.querySelectorAll('.part,.lbl,.pitem').forEach(el=>el.classList.toggle('on',!!ids&&ids.includes(el.dataset.id)));
+  document.querySelectorAll('.step').forEach(el=>el.classList.toggle('on',+el.dataset.k===step));
+  const one=hoverIds&&hoverIds.length===1?hoverIds[0]:sel;
+  if(one){const P=PARTS[one];cap.innerHTML=`<b>${P.n} ${P.name}</b>${P.role}`}
+  else if(step!==null){cap.innerHTML=`<b>Крок ${step+1} · ${STEPS[step].t}</b>${STEPS[step].x}`}
+  else cap.textContent=DEFAULT_CAP;
+}
+figEl.addEventListener('click',e=>{
+  const t=e.target.closest('.part,.lbl');
+  if(!figEl.classList.contains('exploded')){pinned=true;setExploded(true);return}
+  if(t){const id=t.dataset.id;sel=(sel===id)?null:id;step=null;hoverIds=null;paint();return}
+  pinned=false;sel=null;step=null;hoverIds=null;setExploded(false);paint();
+});
+figEl.addEventListener('pointerover',e=>{if(e.pointerType!=='mouse'||!figEl.classList.contains('exploded'))return;const t=e.target.closest('.part,.lbl');hoverIds=t?[t.dataset.id]:null;paint()});
+figEl.addEventListener('pointerleave',()=>{hoverIds=null;paint()});
+toggleBtn.addEventListener('click',()=>{pinned=!figEl.classList.contains('exploded');setExploded(pinned);if(!pinned){step=null;sel=null;hoverIds=null;paint()}});
+stepsEl.addEventListener('click',e=>{const b=e.target.closest('.step');if(!b)return;const k=+b.dataset.k;step=(step===k)?null:k;sel=null;hoverIds=null;pinned=true;setExploded(true);paint()});
+plistEl.addEventListener('pointerover',e=>{const li=e.target.closest('.pitem');if(!li)return;hoverIds=[li.dataset.id];setExploded(true);paint()});
+plistEl.addEventListener('pointerleave',()=>{hoverIds=null;if(!pinned&&step===null)setExploded(false);paint()});
+plistEl.addEventListener('focusin',e=>{const li=e.target.closest('.pitem');if(li){hoverIds=[li.dataset.id];setExploded(true);paint()}});
+plistEl.addEventListener('click',e=>{const li=e.target.closest('.pitem');if(li){pinned=true;sel=li.dataset.id;step=null;hoverIds=null;setExploded(true);paint()}});
+
+layout();
+let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(layout,150)});
+if(!reduce){const loop=()=>{render(false);requestAnimationFrame(loop)};requestAnimationFrame(loop)}
+})();
+</script>
+
+</body>
+</html>
