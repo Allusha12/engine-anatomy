@@ -118,7 +118,18 @@ h2{font-family:var(--f-display);font-weight:500;font-size:19px;margin:0 0 14px;l
 .dl small{font-size:11px;opacity:.7}
 .get ol{margin:0;padding-left:20px;display:grid;gap:4px;color:var(--ink-2)}
 .get code{font-family:var(--f-mono);font-size:13px;color:var(--ink)}
-@media (max-width:520px){.dl{justify-self:stretch}}
+.author{display:inline-flex;align-items:center;gap:12px;justify-self:start;color:var(--ink);text-decoration:none;line-height:1.3}
+.author .ava{width:40px;height:40px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-family:var(--f-display);font-weight:500;font-size:16px;flex:none}
+.author:hover b{color:var(--accent)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
+.star{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 18px;border:1px solid var(--ink);color:var(--ink);text-decoration:none;font-family:var(--f-mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;background:var(--paper)}
+.star .st{color:#C9A227;font-size:16px}
+.star .cnt{margin-left:4px;padding-left:10px;border-left:1px solid var(--rule);font-variant-numeric:tabular-nums}
+.star:hover{border-color:var(--accent);color:var(--accent)}
+.star:focus-visible,.author:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.get .note{color:var(--ink-2);font-size:14px}
+.legal{font-size:10px;line-height:1.6}
+@media (max-width:520px){.actions{flex-direction:column}.dl,.star{justify-content:center}}
 </style>
 
 <div class="wrap">
@@ -169,15 +180,24 @@ h2{font-family:var(--f-display);font-weight:500;font-size:19px;margin:0 0 14px;l
   <section class="get" id="skill">
     <div class="mono">Skill для Claude</div>
     <h2>Зробіть таку схему для будь-чого</h2>
-    <p>Скачайте цей skill і створюйте свої схеми.</p>
-    <a class="dl" href="/anatomy-skill.zip" download="anatomy-skill.zip">Скачати skill <small>ZIP · 6 КБ</small></a>
-    <ol>
-      <li>Відкрийте Claude → <b>Settings → Capabilities</b>.</li>
-      <li>У розділі <b>Skills</b> натисніть <b>Upload skill</b> і виберіть архів, розпаковувати не треба.</li>
-      <li>Напишіть у чаті <code>/anatomy</code> і що хочете розібрати.</li>
-    </ol>
-    <p class="mono note">Потрібен платний план Claude (Pro, Max, Team або Enterprise) з увімкненим Code execution and file creation.</p>
+    <p>Ця схема зроблена за мотивами skill <b>Anatomy</b>. Скачайте оригінал на GitHub і створюйте свої схеми.</p>
+    <a class="author" href="https://github.com/wheresryan22" target="_blank" rel="noopener">
+      <span class="ava" aria-hidden="true">R</span>
+      <span><span class="mono">Автор skill</span><br><b>Ryan</b> · @wheresryan22</span>
+    </a>
+    <div class="actions">
+      <a class="dl" href="https://github.com/wheresryan22/anatomy" target="_blank" rel="noopener">Скачати на GitHub <span aria-hidden="true">↗</span></a>
+      <a class="star" href="https://github.com/wheresryan22/anatomy/stargazers" target="_blank" rel="noopener" aria-label="Поставити зірочку на GitHub"><span class="st" aria-hidden="true">★</span> Star<span class="cnt" id="stars" hidden></span></a>
+    </div>
+    <p class="note">Інструкція зі встановлення — у README репозиторію. Для Claude Code: <code>npx skills add wheresryan22/anatomy -g</code></p>
+    <p class="mono legal">Porsche і 911 GT3 — торговельні марки Porsche AG. Сторінка не пов’язана з Porsche, схема умовна.</p>
   </section>
+  <script>
+  (function(){var el=document.getElementById('stars');if(!el)return;
+    function fmt(n){return n>=1000?(Math.round(n/100)/10).toString().replace('.0','')+'k':String(n)}
+    try{fetch('https://api.github.com/repos/wheresryan22/anatomy').then(function(r){return r.ok?r.json():null}).then(function(d){if(d&&typeof d.stargazers_count==='number'){el.textContent=fmt(d.stargazers_count);el.hidden=false}}).catch(function(){})}catch(e){}
+  })();
+  </script>
 </div>
 
 <script>
